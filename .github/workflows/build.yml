@@ -6,6 +6,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: unzip -q MinimalDM.zip
+      - name: Custom name and logo
+        run: |
+          R=MinimalDM/app/src/main/res
+          if [ -f appname.txt ]; then
+            N=$(tr -cd 'A-Za-z0-9 ._-' < appname.txt | head -n1)
+            sed -i "s|>[^<]*</string>|>$N</string>|" $R/values/strings.xml
+          fi
+          if [ -f icon.png ]; then
+            rm -rf $R/mipmap-anydpi-v26
+            mkdir -p $R/mipmap-xxxhdpi
+            cp icon.png $R/mipmap-xxxhdpi/ic_launcher.png
+          fi
       - uses: actions/setup-java@v4
         with: {distribution: temurin, java-version: 17}
       - uses: gradle/actions/setup-gradle@v4
